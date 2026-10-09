@@ -10,7 +10,7 @@ import { SAMPLE_PAPERS } from './src/server/samplePapers.ts';
 import { defaultExecutionProvider } from './src/server/executionRunner.ts';
 import { isGeminiConfigured } from './src/server/geminiClient.ts';
 import { createRequire } from 'module';
-import pdfParseModule from 'pdf-parse';
+//import pdfParseModule from 'pdf-parse';
 
 // Safe resolution for pdf-parse handling both CommonJS and ES module import styles:
 // 1. Check if the imported pdf-parse module is a function; if not, use module.default.
