@@ -1,0 +1,115 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.email == 'mljeevitha@gmail.com' && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isProjectOwner(projectId) {
+      return isSignedIn() && (
+        get(/databases/$(database)/documents/projects/$(projectId)).data.ownerId == request.auth.uid
+      );
+    }
+
+    // Validation helpers
+    function isValidUser(data) {
+      return data.email is string && data.email.size() <= 256;
+    }
+
+    function isValidProject(data) {
+      return data.id is string && isValidId(data.id)
+        && data.ownerId is string && data.ownerId == request.auth.uid
+        && data.title is string && data.title.size() <= 256
+        && data.status is string && data.status.size() <= 32;
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isOwner(userId) && isValidUser(incoming());
+      allow update: if isOwner(userId) && isValidUser(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Projects Collection
+    match /projects/{projectId} {
+      allow get: if isValidId(projectId) && (resource.data.ownerId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow create: if isValidId(projectId) && isValidProject(incoming()) && incoming().ownerId == request.auth.uid;
+      allow update: if isValidId(projectId) && (
+        (isOwner(existing().ownerId) && incoming().ownerId == existing().ownerId && isValidProject(incoming()))
+        || isAdmin()
+      );
+      allow delete: if isValidId(projectId) && (isOwner(existing().ownerId) || isAdmin());
+
+      // Research Spec Subcollection
+      match /research_spec/{specId} {
+        allow read: if isValidId(projectId) && (isProjectOwner(projectId) || isAdmin());
+        allow write: if isValidId(projectId) && (isProjectOwner(projectId) || isAdmin())
+          && incoming().ownerId == request.auth.uid;
+      }
+
+      // Implementation Plan Subcollection
+      match /implementation_plan/{planId} {
+        allow read: if isValidId(projectId) && (isProjectOwner(projectId) || isAdmin());
+        allow write: if isValidId(projectId) && (isProjectOwner(projectId) || isAdmin())
+          && incoming().ownerId == request.auth.uid;
+      }
+
+      // Code Artifacts Subcollection
+      match /code_artifacts/{artifactId} {
+        allow read: if isValidId(projectId) && (isProjectOwner(projectId) || isAdmin());
+        allow write: if isValidId(projectId) && (isProjectOwner(projectId) || isAdmin())
+          && incoming().ownerId == request.auth.uid;
+      }
+
+      // Execution Runs Subcollection
+      match /execution_runs/{runId} {
+        allow read: if isValidId(projectId) && (isProjectOwner(projectId) || isAdmin());
+        allow write: if isValidId(projectId) && (isProjectOwner(projectId) || isAdmin())
+          && incoming().ownerId == request.auth.uid;
+      }
+
+      // Debug Iterations Subcollection
+      match /debug_iterations/{iterationId} {
+        allow read: if isValidId(projectId) && (isProjectOwner(projectId) || isAdmin());
+        allow write: if isValidId(projectId) && (isProjectOwner(projectId) || isAdmin())
+          && incoming().ownerId == request.auth.uid;
+      }
+
+      // Evaluation Report Subcollection
+      match /evaluation_report/{reportId} {
+        allow read: if isValidId(projectId) && (isProjectOwner(projectId) || isAdmin());
+        allow write: if isValidId(projectId) && (isProjectOwner(projectId) || isAdmin())
+          && incoming().ownerId == request.auth.uid;
+      }
+    }
+  }
+}

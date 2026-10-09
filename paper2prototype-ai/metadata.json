@@ -1,0 +1,6 @@
+{
+  "name": "Paper2Prototype AI",
+  "description": "Universal Research-to-Prototype Agent: transform scientific papers (PDF) into executable, testable software prototypes with multi-agent verification.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,301 @@
+{
+  "entities": {
+    "users": {
+      "title": "User Profile",
+      "description": "User account information and profile metadata.",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 256
+        },
+        "displayName": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "photoURL": {
+          "type": "string",
+          "maxLength": 512
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        }
+      },
+      "required": ["email", "createdAt", "updatedAt"]
+    },
+    "projects": {
+      "title": "Research Project",
+      "description": "Metadata and status for an uploaded research paper project.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "maxLength": 128
+        },
+        "ownerId": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "maxLength": 128
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "originalFileName": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "fileSize": {
+          "type": "number"
+        },
+        "domain": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "status": {
+          "type": "string",
+          "enum": ["uploaded", "analyzing", "planned", "generating", "testing", "debugging", "evaluated", "failed"],
+          "maxLength": 32
+        },
+        "currentStage": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "error": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "ownerId", "title", "status", "createdAt", "updatedAt"]
+    },
+    "research_specs": {
+      "title": "Research Specification",
+      "description": "Extracted paper methodology and feasibility assessment.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "projectId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "ownerId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "domain": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "problemDefinition": {
+          "type": "string",
+          "maxLength": 2048
+        },
+        "methodology": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "feasibilityLevel": {
+          "type": "string",
+          "enum": ["feasible", "feasible_with_assumptions", "partially_feasible", "blocked_missing_resources", "requires_hardware", "not_reproducible"],
+          "maxLength": 64
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "projectId", "ownerId", "domain", "feasibilityLevel", "createdAt", "updatedAt"]
+    },
+    "implementation_plans": {
+      "title": "Implementation Plan",
+      "description": "Structured ordered task list for prototype code generation.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "projectId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "ownerId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "approvedByUser": {
+          "type": "boolean"
+        },
+        "taskCount": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "projectId", "ownerId", "approvedByUser", "createdAt", "updatedAt"]
+    },
+    "code_artifacts": {
+      "title": "Code Artifacts",
+      "description": "Generated modular project source code, configurations, and tests.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "projectId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "ownerId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "language": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "framework": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "fileCount": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "projectId", "ownerId", "language", "createdAt", "updatedAt"]
+    },
+    "execution_runs": {
+      "title": "Execution Run",
+      "description": "Isolated testing run execution logs, exit codes, and test outcomes.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "projectId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "ownerId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "command": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "exitCode": {
+          "type": "number"
+        },
+        "passed": {
+          "type": "boolean"
+        },
+        "passedTests": {
+          "type": "number"
+        },
+        "failedTests": {
+          "type": "number"
+        },
+        "durationMs": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "projectId", "ownerId", "exitCode", "passed", "createdAt"]
+    },
+    "evaluation_reports": {
+      "title": "Evaluation Report",
+      "description": "Research verification and limitation analysis.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "projectId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "ownerId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "classification": {
+          "type": "string",
+          "enum": ["functional_prototype", "partially_implemented", "experimentally_evaluated", "partial_reproduction", "full_reproduction"],
+          "maxLength": 64
+        },
+        "confidenceScore": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "projectId", "ownerId", "classification", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "users",
+      "description": "User profiles and account settings"
+    },
+    "/projects/{projectId}": {
+      "schema": "projects",
+      "description": "Root project documents"
+    },
+    "/projects/{projectId}/research_spec/spec": {
+      "schema": "research_specs",
+      "description": "Structured research methodology and feasibility specs"
+    },
+    "/projects/{projectId}/implementation_plan/plan": {
+      "schema": "implementation_plans",
+      "description": "Task plan for code synthesis"
+    },
+    "/projects/{projectId}/code_artifacts/artifacts": {
+      "schema": "code_artifacts",
+      "description": "Generated source files and test suites"
+    },
+    "/projects/{projectId}/execution_runs/{runId}": {
+      "schema": "execution_runs",
+      "description": "Real execution test runs and output logs"
+    },
+    "/projects/{projectId}/evaluation_report/report": {
+      "schema": "evaluation_reports",
+      "description": "Evaluation comparing implementation with paper"
+    }
+  }
+}
