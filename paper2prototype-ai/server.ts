@@ -20,12 +20,11 @@ let resolvedPdfParse: any = null;
 try {
   const require = createRequire(import.meta.url);
   const libPdfParse = require('pdf-parse/lib/pdf-parse.js');
+
   if (typeof libPdfParse === 'function') {
     resolvedPdfParse = libPdfParse;
   }
-} catch {
-  // ignore
-}
+} catch {}
 
 if (typeof resolvedPdfParse !== 'function') {
   if (typeof pdfParseModule === 'function') {
