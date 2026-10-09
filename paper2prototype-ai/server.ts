@@ -16,15 +16,25 @@ import { createRequire } from 'module';
 // 1. Check if the imported pdf-parse module is a function; if not, use module.default.
 // 2. Ensure both CommonJS and ES module import styles are handled safely so that pdfParse(...) executes without throwing a TypeError.
 let resolvedPdfParse: any = null;
+const require = createRequire(import.meta.url);
 
-try {
-  const require = createRequire(import.meta.url);
-  const libPdfParse = require('pdf-parse/lib/pdf-parse.js');
+export async function pdfParse(
+  buf: Buffer,
+  options?: any
+): Promise<any> {
+  const loaded = require('pdf-parse/lib/pdf-parse.js');
 
-  if (typeof libPdfParse === 'function') {
-    resolvedPdfParse = libPdfParse;
+  const parser =
+    typeof loaded === 'function'
+      ? loaded
+      : loaded?.default;
+
+  if (typeof parser !== 'function') {
+    throw new Error('Unable to initialize PDF parser');
   }
-} catch {}
+
+  return parser(buf, options);
+}
 
 if (typeof resolvedPdfParse !== 'function') {
   if (typeof pdfParseModule === 'function') {
